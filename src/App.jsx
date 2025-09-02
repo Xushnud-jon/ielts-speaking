@@ -25,10 +25,11 @@ function App() {
     }
 
     try {
-      const response = await fetch("http://localhost:5000/analyze-speech", {
-        method: "POST",
-        body: formData,
-      });
+     const response = await fetch("https://ielts-speaking-backend.onrender.com/analyze-speech", {
+  method: "POST",
+  body: formData,
+});
+
 
       const data = await response.json();
       setResult(data.analysis || "No analysis result.");
