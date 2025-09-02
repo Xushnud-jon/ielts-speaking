@@ -110,18 +110,15 @@ function App() {
               onChange={(e) => {
                 const selectedFile = e.target.files[0];
                 setFile(selectedFile);
-                if (selectedFile) setAudioUrl(URL.createObjectURL(selectedFile));
+                if (selectedFile) {
+                  const url = URL.createObjectURL(selectedFile);
+                  setAudioUrl(url);
+                  uploadAudio(selectedFile); // darhol tahlil
+                }
               }}
               className="hidden"
             />
           </label>
-          <button
-            onClick={() => uploadAudio(null)}
-            disabled={loading || !file}
-            className="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-5 py-3 rounded-xl shadow-lg hover:from-blue-600 hover:to-blue-700 disabled:opacity-70 disabled:cursor-not-allowed transition-all duration-200 font-medium text-sm"
-          >
-            {loading ? "⏳" : "📤"} Yuklash
-          </button>
         </div>
 
         {/* Audio Player */}
@@ -141,11 +138,19 @@ function App() {
           </button>
         )}
 
-        {/* Record Button */}
+        {/* Record / Analyze Button */}
         <div className="flex justify-center mb-6">
           {!recording ? (
             <button
-              onClick={startRecording}
+              onClick={() => {
+                if (file) {
+                  // Fayl yuklangan bo'lsa, darhol tahlil qil
+                  uploadAudio(file);
+                } else {
+                  // Fayl yo'q bo'lsa, normal recording start
+                  startRecording();
+                }
+              }}
               className="group flex items-center gap-3 bg-gradient-to-r from-red-500 to-red-600 text-white px-7 py-4 rounded-full shadow-xl hover:from-red-600 hover:to-red-700 active:scale-95 transition-all duration-200 font-semibold text-sm"
             >
               <span className="animate-pulse">🔴</span>
@@ -178,7 +183,6 @@ function App() {
               {displayLines.map((line, i) => {
                 const lower = line.toLowerCase();
                 if (lower.includes("band")) {
-                  // 'band' satrlarini tartib bilan chiqarish
                   return (
                     <div key={i} className="font-bold text-black">
                       {i + 1}. {line}
