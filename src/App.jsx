@@ -10,6 +10,14 @@ function App() {
   const mediaRecorderRef = useRef(null);
   const audioChunks = useRef([]);
 
+  // Reset funksiyasi
+  const resetAudio = () => {
+    setFile(null);
+    setAudioUrl(null);
+    setResult("");
+    setShowFullResult(false);
+  };
+
   // Upload & analyze audio
   const uploadAudio = async (audioBlob) => {
     setLoading(true);
@@ -95,20 +103,17 @@ function App() {
             className="flex-1 bg-gradient-to-r from-gray-50 to-gray-100 hover:from-gray-100 hover:to-gray-200 border-2 border-dashed border-gray-300 rounded-lg px-4 py-3 text-center text-gray-600 text-sm transition-all duration-200 cursor-pointer hover:border-purple-400 hover:shadow-md"
           >
             📂 Audio yuklang
-          <input
-  id="audio-upload"
-  type="file"
-  accept="audio/*"
-  onChange={(e) => {
-    const selectedFile = e.target.files[0];
-    setFile(selectedFile);
-    if (selectedFile) {
-      setAudioUrl(URL.createObjectURL(selectedFile)); // browserda darhol ko‘rsatish
-    }
-  }}
-  className="hidden"
-/>
-
+            <input
+              id="audio-upload"
+              type="file"
+              accept="audio/*"
+              onChange={(e) => {
+                const selectedFile = e.target.files[0];
+                setFile(selectedFile);
+                if (selectedFile) setAudioUrl(URL.createObjectURL(selectedFile));
+              }}
+              className="hidden"
+            />
           </label>
           <button
             onClick={() => uploadAudio(null)}
@@ -124,6 +129,16 @@ function App() {
           <div className="mb-6">
             <audio controls src={audioUrl} className="w-full rounded-lg" />
           </div>
+        )}
+
+        {/* Yangi audio tugmasi */}
+        {(audioUrl || result) && (
+          <button
+            onClick={resetAudio}
+            className="mb-6 bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded-lg text-sm transition"
+          >
+            🔄 Yangi audio
+          </button>
         )}
 
         {/* Record Button */}
@@ -156,36 +171,34 @@ function App() {
         )}
 
         {/* Result */}
-    {/* Result */}
-{result && (
-  <div className="mt-6 bg-gradient-to-r from-gray-50 to-gray-100 p-5 rounded-xl border border-gray-200 shadow-inner">
-    <h3 className="text-sm font-bold text-gray-700 mb-2">📊 Natija:</h3>
-    <div className="text-gray-800 text-sm leading-relaxed font-sans">
-      {displayLines.map((line, i) => {
-        const lower = line.toLowerCase();
-        if (lower.includes("band")) {
-          // 'band' satrlarini tartib bilan chiqarish
-          return (
-            <div key={i} className="font-bold text-black">
-              {i + 1}. {line}
+        {result && (
+          <div className="mt-6 bg-gradient-to-r from-gray-50 to-gray-100 p-5 rounded-xl border border-gray-200 shadow-inner">
+            <h3 className="text-sm font-bold text-gray-700 mb-2">📊 Natija:</h3>
+            <div className="text-gray-800 text-sm leading-relaxed font-sans">
+              {displayLines.map((line, i) => {
+                const lower = line.toLowerCase();
+                if (lower.includes("band")) {
+                  // 'band' satrlarini tartib bilan chiqarish
+                  return (
+                    <div key={i} className="font-bold text-black">
+                      {i + 1}. {line}
+                    </div>
+                  );
+                } else {
+                  return <div key={i}>{line}</div>;
+                }
+              })}
             </div>
-          );
-        } else {
-          return <div key={i}>{line}</div>;
-        }
-      })}
-    </div>
-    {lines.length > 3 && !showFullResult && (
-      <button
-        onClick={() => setShowFullResult(true)}
-        className="text-purple-600 text-sm mt-2 underline"
-      >
-        ...more
-      </button>
-    )}
-  </div>
-)}
-
+            {lines.length > 3 && !showFullResult && (
+              <button
+                onClick={() => setShowFullResult(true)}
+                className="text-purple-600 text-sm mt-2 underline"
+              >
+                ...more
+              </button>
+            )}
+          </div>
+        )}
 
         {/* Info */}
         <div className="mt-6 text-center">
